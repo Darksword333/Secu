@@ -117,7 +117,10 @@ void test_cesar ( char * m ){
 }
 
 void test_vigenere ( char * m , int max ){
-
+    char * clef = "dahu"; // Force la clef obtenu grace a hhhq
+    char * toPrint = vigenere_dechiffre(m, clef);
+    printf("%s\n", toPrint);
+    free(toPrint);
 }
 
 char * fileToChar(char *name){
@@ -141,16 +144,63 @@ char * fileToChar(char *name){
   return contenu;
 }
 
+char * extraire_sous_texte(char * source, int depart, int pas) {
+    int len = strlen(source);
+    int taille_max = (len / pas) + 2; 
+    char * sous_texte = malloc(taille_max * sizeof(char));
+    if (sous_texte == NULL) return NULL;
+    int j = 0;
+    for (int i = depart; i < len; i += pas) {
+        if (isalpha(source[i])) {
+            sous_texte[j++] = source[i];
+        }
+    }
+    sous_texte[j] = '\0';
+    return sous_texte;
+}
+
+int trouver_max(int *frequences) {
+    int max_valeur = -1;
+    int indice_max = 0;
+    for (int i = 0; i < 26; i++) {
+        if (frequences[i] > max_valeur) {
+            max_valeur = frequences[i];
+            indice_max = i;
+        }
+    }
+    return indice_max;
+}
+
 int main(void){
   char *contenu;
+  // EXERCICE 1
   contenu = fileToChar("input/texte1.txt");
-  test_cesar(contenu); // Exercice 1
+
+  int *frequence = calcule_frequences(contenu);
+  printf("La fréquence est de : %d\n", *frequence);
+  test_cesar(contenu);
   
   free(contenu);
+  // EXERCICE 2
   contenu = fileToChar("input/texte2.txt");
-
-  //test_vigenere(contenu); // Exercice 2
-
+  int len_max = 10;
+  for (int i = 1; i <= len_max; i++) {
+    char *clef = malloc(i + 1);
+    for (int j = 0; j < i; j++) {
+      char *colonne = extraire_sous_texte(contenu, j, i);
+      int *freq = calcule_frequences(colonne);
+      int max_idx = trouver_max(freq);
+      clef[j] = minuscule((max_idx - 4 + 26) % 26); // 'e' index 4
+      free(colonne);
+      free(freq);
+    }
+    clef[i] = '\0';
+    char *decode = vigenere_dechiffre(contenu, clef);
+    printf("Longueur %d | Clé: %s | Extrait: %.30s\n", i, clef, decode);
+    free(decode);
+    free(clef);
+  }
+  test_vigenere(contenu, len_max);
   free(contenu);
   return EXIT_SUCCESS;
 }
