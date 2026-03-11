@@ -1,0 +1,12 @@
+Principe 1 : sujet = clef maitre
+=> on ne l'utilise pas en gnral, sauf pour modifier ses clefs
+activites : 	- signature de messages
+		- chiffrement de messages
+		- certification d'assertions
+assertion : " A dit que K appartient  B "
+	techniquement : A signe le couple (K, B)
+			[ K clef publique, potentiellement signe ]
+=> dans gpg, pas en ligne de commande
+
+keyserver.ubuntu.com
+-> serveur MIT fonctionne pas tout le temps
